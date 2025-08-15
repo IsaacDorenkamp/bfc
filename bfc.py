@@ -300,13 +300,20 @@ def main():
     assembly = compiler.compile()
 
     if options.assemble_only:
-        try:
-            with open(options.output, "w") as fp:
-                fp.write(assembly)
-        except IOError:
-            sys.stderr.write("fatal: could not write assembly output\n")
-            sys.exit(1)
+        if options.output is None:
+            sys.stdout.write(assembly)
+        else:
+            try:
+                with open(options.output, "w") as fp:
+                    fp.write(assembly)
+            except IOError:
+                sys.stderr.write("fatal: could not write assembly output\n")
+                sys.exit(1)
     else:
+        if options.output is None:
+            sys.stderr.write("fatal: must provide output file (unless -S is used)\n")
+            sys.exit(1)
+
         assemble_and_link(assembly, options.output)
 
 
